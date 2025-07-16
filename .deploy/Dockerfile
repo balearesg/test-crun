@@ -4,7 +4,7 @@
 FROM node:18 AS build-stage
 
 # Establece el directorio de trabajo donde se encuentran los archivos de la aplicación
-WORKDIR /app/test-crun
+WORKDIR /app
 
 # Copia solo los package.json y package-lock.json para aprovechar el cache de Docker.
 # Asume que estos archivos están en el directorio 'test-crun' localmente
