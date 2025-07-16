@@ -1,41 +1,41 @@
-
 # -------------------------
 # ------ Build Stage ------
 # -------------------------
 FROM node:18 AS build-stage
 
-# Set the working directory in the container
-WORKDIR /app
+# Establece el directorio de trabajo donde se encuentran los archivos de la aplicación
+WORKDIR /app/test-crun
 
-# Copy the package files first to leverage Docker cache
-COPY package*.json ./
+# Copia solo los package.json y package-lock.json para aprovechar el cache de Docker.
+# Asume que estos archivos están en el directorio 'test-crun' localmente
+# y que el contexto de build es la carpeta que contiene 'test-crun'.
+COPY test-crun/package*.json ./
 
-# Install dependencies
+# Instala las dependencias. Si hay un package-lock.json, se usará.
 RUN npm install
 
-# Copy the rest of the application files
-COPY . .
+# Copia el resto de los archivos de la aplicación (el código fuente de test-crun)
+COPY test-crun/. .
 
-# Install beyond
+# Instala beyond globalmente
 RUN npm i -g beyond@1.2.5
 
-# Build the project
+# Construye el proyecto con beyond
 RUN beyond build --pkg=test-crun --distribution=node --logs
-
 
 # ------------------------------
 # ------ Production Stage ------
 # ------------------------------
-FROM node:18
+FROM node:18-slim # Usa una imagen más ligera para producción
 
-# Set the working directory in the container
+# Establece el directorio de trabajo para la aplicación final
 WORKDIR /app
 
-# Copy only the necessary node_modules
-COPY --from=build-stage /app/node_modules ./node_modules
+# Copia los node_modules desde la etapa de construcción (ubicados correctamente)
+COPY --from=build-stage /app/test-crun/node_modules ./node_modules
 
-# Copy only the built files from the previous stage
-COPY --from=build-stage /app/.beyond/builds/node/code/. .
+# Copia solo los archivos de la aplicación compilados desde la etapa de construcción
+COPY --from=build-stage /app/test-crun/.beyond/builds/node/code/. .
 
-# Your start command here
+# Comando para iniciar la aplicación
 CMD [ "node", "index.js" ]
