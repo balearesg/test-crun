@@ -26,7 +26,7 @@ RUN beyond build --pkg=test-crun --distribution=node --logs
 # ------------------------------
 # ------ Production Stage ------
 # ------------------------------
-FROM node:18-slim # Usa una imagen más ligera para producción
+FROM node:18-slim 
 
 # Establece el directorio de trabajo para la aplicación final
 WORKDIR /app
