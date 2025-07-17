@@ -1,6 +1,8 @@
+import * as dotenv from 'dotenv';
 import * as express from 'express';
 import { hmr, routes } from 'test-crun/routes';
 import { Connections } from './connections';
+dotenv.config();
 
 export class Server {
 	#instance;
@@ -25,6 +27,7 @@ export class Server {
 			this.#instance = this.#app.listen(this.#port);
 
 			this.#connections = new Connections(this.#instance);
+			console.log('SERVER RUNNING... ', this.#port);
 		} catch (exc) {
 			console.error('Error', exc);
 		}
